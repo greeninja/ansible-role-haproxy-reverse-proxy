@@ -15,6 +15,12 @@
     cmd: "haproxy -c -f /etc/haproxy/haproxy.cfg"
   when: wr_config.changed
 
+- name: Set SELinux haproxy bool
+  seboolean:
+    name: haproxy_connect_any
+    state: yes
+    persistent: yes
+
 - name: Start haproxy
   service:
     name: haproxy
