@@ -1,0 +1,6 @@
+---
+
+- name: Install Haproxy
+  package:
+    name: haproxy
+    state: installed

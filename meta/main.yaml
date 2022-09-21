@@ -1,0 +1,9 @@
+---
+
+galaxy_info:
+  role_name: haproxy-reverse-proxy
+  description: Simple role to setup haproxy reverse proxy
+  author: greeninja
+  galaxy_tags: []
+
+dependencies: []
