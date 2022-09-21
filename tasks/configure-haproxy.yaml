@@ -27,6 +27,15 @@
     state: yes
     persistent: yes
 
+- name: Set SELinux haproxy ports
+  community.general.seport:
+    ports: "{{ item.bind }}"
+    proto: tcp
+    setype: http_port_t
+    state: present
+  loop:
+    - "{{ frontend }}"
+
 - name: Start haproxy
   service:
     name: haproxy
