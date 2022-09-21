@@ -56,3 +56,4 @@ backend {{ b.name }}
   {% for s in b.server %}
   server {{ s.hostname }} {{ s.ip }}:{{ s.port }} {{ s.check }}
   {% endfor %}
+{% endfor %}
