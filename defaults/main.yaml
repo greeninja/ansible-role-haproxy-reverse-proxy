@@ -67,7 +67,7 @@ frontend:
 
 backend:
   - name: api
-    balance: "leastcon"
+    balance: "leastconn"
     options:
       - "tcp-check"
     server:
@@ -88,7 +88,7 @@ backend:
         port: 6443
         check: "check"
   - name: machine_controller
-    balance: "leastcon"
+    balance: "leastconn"
     options:
       - "tcp-check"
     server:
@@ -109,7 +109,7 @@ backend:
         port: 22623
         check: "check"
   - name: http
-    balance: "leastcon"
+    balance: "leastconn"
     options:
       - "tcp-check"
     server:
@@ -130,7 +130,7 @@ backend:
         port: 80
         check: "check"
   - name: https
-    balance: "leastcon"
+    balance: "leastconn"
     options:
       - "tcp-check"
     server:
