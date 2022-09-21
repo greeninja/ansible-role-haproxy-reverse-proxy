@@ -21,11 +21,14 @@
     state: yes
     persistent: yes
 
-- name: Set SELinux nis_enabled bool
+- name: Set SELinux bools
   seboolean:
-    name: nis_enabled
+    name: "{{ item }}"
     state: yes
     persistent: yes
+  loop:
+    - httpd_can_network_connect
+    - nis_enabled
 
 - name: Set SELinux haproxy ports
   community.general.seport:
