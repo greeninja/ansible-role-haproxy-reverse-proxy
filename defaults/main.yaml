@@ -95,19 +95,19 @@ backend:
       - hostname: "bootstrap"
         ip: "10.44.41.20"
         port: 22623
-        check: true
+        check: "check"
       - hostname: "controller01"
         ip: "10.44.41.21"
         port: 22623
-        check: true
+        check: "check"
       - hostname: "controller02"
         ip: "10.44.41.22"
         port: 22623
-        check: true
+        check: "check"
       - hostname: "controller03"
         ip: "10.44.41.23"
         port: 22623
-        check: true
+        check: "check"
   - name: http
     balance: "leastcon"
     options:
@@ -116,19 +116,19 @@ backend:
       - hostname: "bootstrap"
         ip: "10.44.41.20"
         port: 80
-        check: true
+        check: "check"
       - hostname: "controller01"
         ip: "10.44.41.21"
         port: 80
-        check: true
+        check: "check"
       - hostname: "controller02"
         ip: "10.44.41.22"
         port: 80
-        check: true
+        check: "check"
       - hostname: "controller03"
         ip: "10.44.41.23"
         port: 80
-        check: true
+        check: "check"
   - name: https
     balance: "leastcon"
     options:
@@ -137,16 +137,16 @@ backend:
       - hostname: "bootstrap"
         ip: "10.44.41.20"
         port: 443
-        check: true
+        check: "check"
       - hostname: "controller01"
         ip: "10.44.41.21"
         port: 443
-        check: true
+        check: "check"
       - hostname: "controller02"
         ip: "10.44.41.22"
         port: 443
-        check: true
+        check: "check"
       - hostname: "controller03"
         ip: "10.44.41.23"
         port: 443
-        check: true
+        check: "check"
