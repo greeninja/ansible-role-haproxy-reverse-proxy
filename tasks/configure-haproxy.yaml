@@ -35,6 +35,14 @@
     state: present
   loop: "{{ frontend }}"
 
+- name: Set SELinux haproxy ports
+  community.general.seport:
+    ports: "{{ item.bind | regex_replace ('[^0-9]','') }}"
+    proto: tcp
+    setype: http_port_t
+    state: present
+  loop: "{{ listen }}"
+
 - name: Start haproxy
   service:
     name: haproxy
