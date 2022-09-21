@@ -34,7 +34,7 @@ listen {{ l.name }}
   stats auth {{ l.stats.auth }}
   stats refresh {{ l.stats.refresh }}
 {% endfor %}
-  mode {{ mode }}
+  mode {{ l.mode }}
 
 ### Frontends
 
