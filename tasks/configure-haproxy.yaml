@@ -2,13 +2,20 @@
 - name: Write haproxy.cfg config file
   template:
     src: haproxy.cfg.j2
-    dest: /tmp/haproxy.cfg
+    dest: /etc/haproxy/haproxy.cfg
     mode: "0644"
     owner: "root"
     group: "root"
+  notify:
+    - Restart haproxy
   register: wr_config
 
 - name: Check config passes
   shell:
-    cmd: "haproxy -c -f /tmp/haproxy.cfg"
+    cmd: "haproxy -c -f /etc/haproxy/haproxy.cfg"
   when: wr_config.changed
+
+- name: Start haproxy
+  service:
+    name: haproxy
+    state: started
