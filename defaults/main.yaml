@@ -1,0 +1,147 @@
+---
+
+global:
+  log: "127.0.0.1 local2"
+  chroot: "/var/lib/haproxy"
+  pidfile: "/var/run/haproxy.pid"
+  maxconn: 4000
+  user: "haproxy"
+  group: "haproxy"
+  daemon: true
+  stats: "socket /var/lib/haproxy/stats"
+
+defaults:
+  mode: "tcp"
+  log: "global"
+  option:
+    - "tcplog"
+    - "dontlognull"
+    - "http-server-close"
+    - "forwardfor except 127.0.0.0/8"
+    - "redispatch"
+  retries: 3
+  timeout:
+    http-request: "10s"
+    queue: "1m"
+    connect: "10s"
+    client: "1m"
+    server: "1m"
+    http-keep-alive: "10s"
+    check: "10s"
+  maxconn: 3000
+
+listen:
+  - name: stats
+    bind: "*:9090"
+    stats:
+      enable: true
+      uri: "/stats"
+      auth: "admin:admin"
+      refresh: "30s"
+    mode: "http"
+
+  - name: api_frontend
+    bind: "*:6443"
+    mode: "tcp"
+    use_backend: "api"
+
+  - name: machine_controller_frontend
+    bind: "*:22623"
+    mode: "tcp"
+    use_backend: machine_controller
+
+  - name: http_frontend
+    bind: "*:80"
+    mode: "tcp"
+    use_backend: "http"
+
+  - name: https_frontend
+    bind: "*:443"
+    mode: "tcp"
+    use_backend: "https"
+
+backend:
+  - name: api
+    balance: "leastcon"
+    options:
+      - "tcp-check"
+    server:
+      - hostname: "bootstrap"
+        ip: "10.44.41.20"
+        port: 6443
+        check: true
+      - hostname: "controller01"
+        ip: "10.44.41.21"
+        port: 6443
+        check: true
+      - hostname: "controller02"
+        ip: "10.44.41.22"
+        port: 6443
+        check: true
+      - hostname: "controller03"
+        ip: "10.44.41.23"
+        port: 6443
+        check: true
+  - name: machine_controller
+    balance: "leastcon"
+    options:
+      - "tcp-check"
+    server:
+      - hostname: "bootstrap"
+        ip: "10.44.41.20"
+        port: 22623
+        check: true
+      - hostname: "controller01"
+        ip: "10.44.41.21"
+        port: 22623
+        check: true
+      - hostname: "controller02"
+        ip: "10.44.41.22"
+        port: 22623
+        check: true
+      - hostname: "controller03"
+        ip: "10.44.41.23"
+        port: 22623
+        check: true
+  - name: http
+    balance: "leastcon"
+    options:
+      - "tcp-check"
+    server:
+      - hostname: "bootstrap"
+        ip: "10.44.41.20"
+        port: 80
+        check: true
+      - hostname: "controller01"
+        ip: "10.44.41.21"
+        port: 80
+        check: true
+      - hostname: "controller02"
+        ip: "10.44.41.22"
+        port: 80
+        check: true
+      - hostname: "controller03"
+        ip: "10.44.41.23"
+        port: 80
+        check: true
+  - name: https
+    balance: "leastcon"
+    options:
+      - "tcp-check"
+    server:
+      - hostname: "bootstrap"
+        ip: "10.44.41.20"
+        port: 443
+        check: true
+      - hostname: "controller01"
+        ip: "10.44.41.21"
+        port: 443
+        check: true
+      - hostname: "controller02"
+        ip: "10.44.41.22"
+        port: 443
+        check: true
+      - hostname: "controller03"
+        ip: "10.44.41.23"
+        port: 443
+        check: true

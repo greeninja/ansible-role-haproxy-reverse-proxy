@@ -1,0 +1,96 @@
+global
+    log         {{ global.log }}
+    chroot      {{ global.chroot }}
+    pidfile     {{ global.pidfile }}
+    maxconn     {{ global.maxconn }}
+    user        {{ global.user }}
+    group       {{ global.group }}
+    {% if global.daemon %}
+    daemon
+    {% endif %}
+    stats {{ global.socket }}
+                                          
+defaults
+    mode                    tcp
+    log                     global
+    option                  tcplog
+    option                  dontlognull
+    option http-server-close
+    option forwardfor       except 127.0.0.0/8
+    option                  redispatch
+    retries                 3
+    timeout http-request    10s
+    timeout queue           1m
+    timeout connect         10s
+    timeout client          1m
+    timeout server          1m
+    timeout http-keep-alive 10s
+    timeout check           10s
+    maxconn                 3000
+                                          
+## Add stats                            
+                                          
+listen stats
+        bind *:9090
+        stats enable
+        stats uri /stats
+        stats auth admin:admin
+        stats refresh 30s
+                                          
+## Frontend API                         
+frontend api_frontend
+        bind *:6443
+        mode tcp
+        use_backend api
+
+## Frontend Machine Controller
+frontend machine_controller_frontend
+        bind *:22623
+        mode tcp
+  use_backend machine_controller
+
+## HTTP Traffic
+frontend http_frontend
+        bind *:80
+        mode tcp
+  use_backend http
+
+## HTTPS traffic
+frontend https_frontend
+        bind *:443
+        mode tcp
+  use_backend https
+
+#### Backends
+
+backend api
+  balance leastconn
+  option tcp-check
+  server bootstrap 10.44.66.20:6443 check
+  server control01 10.44.66.21:6443 check
+  server control02 10.44.66.22:6443 check
+  server control03 10.44.66.23:6443 check
+
+backend machine_controller
+  balance leastconn
+  option tcp-check
+  server bootstrap 10.44.66.20:22623 check 
+  server control01 10.44.66.21:22623 check 
+  server control02 10.44.66.22:22623 check 
+  server control03 10.44.66.23:22623 check 
+
+backend http
+  balance leastconn
+  option tcp-check
+  server bootstrap 10.44.66.20:80 check 
+  server control01 10.44.66.21:80 check 
+  server control02 10.44.66.22:80 check 
+  server control03 10.44.66.23:80 check 
+
+backend https
+  balance leastconn
+  option tcp-check
+  server bootstrap 10.44.66.20:443 check
+  server control01 10.44.66.21:443 check
+  server control02 10.44.66.22:443 check
+  server control03 10.44.66.23:443 check

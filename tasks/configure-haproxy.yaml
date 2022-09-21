@@ -1,0 +1,8 @@
+---
+- name: Write haproxy.cfg config file
+  template:
+    src: haproxy.cfg.j2
+    dest: /tmp
+    mode: "0644"
+    owner: "root"
+    group: "root"
