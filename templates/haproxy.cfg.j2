@@ -11,13 +11,11 @@ global
     stats {{ global.stats }}
                                           
 defaults
-    mode                    tcp
-    log                     global
-    option                  tcplog
-    option                  dontlognull
-    option http-server-close
-    option forwardfor       except 127.0.0.0/8
-    option                  redispatch
+    mode                    {{ defaults.mode }}
+    log                     {{ defaults.log }}
+    {% for option in defaults.option %}
+    option                  {{ option }}
+    {% endfor %}
     retries                 3
     timeout http-request    10s
     timeout queue           1m
