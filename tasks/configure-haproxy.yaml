@@ -29,7 +29,7 @@
 
 - name: Set SELinux haproxy ports
   community.general.seport:
-    ports: "{{ item.bind | regex_replace ("[^0-9]","") }}"
+    ports: "{{ item.bind | regex_replace ('[^0-9]','') }}"
     proto: tcp
     setype: http_port_t
     state: present
