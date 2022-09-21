@@ -14,19 +14,14 @@
   shell:
     cmd: "haproxy -c -f /etc/haproxy/haproxy.cfg"
   when: wr_config.changed
-
-- name: Set SELinux haproxy bool
-  seboolean:
-    name: haproxy_connect_any
-    state: yes
-    persistent: yes
-
+  
 - name: Set SELinux bools
   seboolean:
     name: "{{ item }}"
     state: yes
     persistent: yes
   loop:
+    - haproxy_connect_any
     - httpd_can_network_connect
     - nis_enabled
 
