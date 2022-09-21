@@ -5,21 +5,21 @@ global
   maxconn     {{ global.maxconn }}
   user        {{ global.user }}
   group       {{ global.group }}
-  {% if global.daemon %}
+{% if global.daemon %}
   daemon
-  {% endif %}
+{% endif %}
   stats {{ global.stats }}
                                           
 defaults
   mode                    {{ defaults.mode }}
   log                     {{ defaults.log }}
-  {% for option in defaults.option %}
+{% for option in defaults.option %}
   option                  {{ option }}
-  {% endfor %}
+{% endfor %}
   retries                 {{ defaults.retries }}
-  {% for timeout in defaults.timeout %}
+{% for timeout in defaults.timeout %}
   timeout {{ timeout.name }}    {{ timeout.time }}
-  {% endfor %}
+{% endfor %}
   maxconn                 {{ defaults.maxconn }}
 
 ### Listen
@@ -27,9 +27,9 @@ defaults
 {% for l in listen %}
 listen {{ l.name }}
   bind {{ l.bind }}
-  {% if l.stats.enable %}
+{% if l.stats.enable %}
   stats enable
-  {% endif %}
+{% endif %}
   stats uri {{ l.stats.uri }}
   stats auth {{ l.stats.auth }}
   stats refresh {{ l.stats.refresh }}
@@ -50,10 +50,10 @@ frontend {{ f.name }}
 {% for b in backend %}
 backend {{ b.name }}
   balance {{ b.balance }}
-  {% for option in b.options %}
+{% for option in b.options %}
   option {{ option }}
-  {% endfor %}
-  {% for s in b.server %}
+{% endfor %}
+{% for s in b.server %}
   server {{ s.hostname }} {{ s.ip }}:{{ s.port }} {{ s.check }}
-  {% endfor %}
+{% endfor %}
 {% endfor %}

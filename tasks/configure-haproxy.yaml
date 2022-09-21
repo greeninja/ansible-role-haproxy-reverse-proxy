@@ -6,7 +6,9 @@
     mode: "0644"
     owner: "root"
     group: "root"
+  register: wr_config
 
 - name: Check config passes
   shell:
     cmd: "haproxy -c -f /tmp/haproxy.cfg"
+  when: wr_config.changed
