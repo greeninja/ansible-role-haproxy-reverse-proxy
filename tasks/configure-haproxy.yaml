@@ -2,7 +2,11 @@
 - name: Write haproxy.cfg config file
   template:
     src: haproxy.cfg.j2
-    dest: /tmp
+    dest: /tmp/haproxy.cfg
     mode: "0644"
     owner: "root"
     group: "root"
+
+- name: Check config passes
+  shell:
+    cmd: "haproxy -c -f /tmp/haproxy.cfg"
