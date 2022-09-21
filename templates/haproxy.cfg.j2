@@ -1,94 +1,58 @@
 global
-    log         {{ global.log }}
-    chroot      {{ global.chroot }}
-    pidfile     {{ global.pidfile }}
-    maxconn     {{ global.maxconn }}
-    user        {{ global.user }}
-    group       {{ global.group }}
-    {% if global.daemon %}
-    daemon
-    {% endif %}
-    stats {{ global.stats }}
+  log         {{ global.log }}
+  chroot      {{ global.chroot }}
+  pidfile     {{ global.pidfile }}
+  maxconn     {{ global.maxconn }}
+  user        {{ global.user }}
+  group       {{ global.group }}
+  {% if global.daemon %}
+  daemon
+  {% endif %}
+  stats {{ global.stats }}
                                           
 defaults
-    mode                    {{ defaults.mode }}
-    log                     {{ defaults.log }}
-    {% for option in defaults.option %}
-    option                  {{ option }}
-    {% endfor %}
-    retries                 3
-    timeout http-request    10s
-    timeout queue           1m
-    timeout connect         10s
-    timeout client          1m
-    timeout server          1m
-    timeout http-keep-alive 10s
-    timeout check           10s
-    maxconn                 3000
-                                          
-## Add stats                            
-                                          
-listen stats
-        bind *:9090
-        stats enable
-        stats uri /stats
-        stats auth admin:admin
-        stats refresh 30s
-                                          
-## Frontend API                         
-frontend api_frontend
-        bind *:6443
-        mode tcp
-        use_backend api
+  mode                    {{ defaults.mode }}
+  log                     {{ defaults.log }}
+  {% for option in defaults.option %}
+  option                  {{ option }}
+  {% endfor %}
+  retries                 {{ defaults.retries }}
+  {% for timeout in defaults.timeout %}
+  timeout {{ timeout.name }}    {{ timeout.time }}
+  {% endfor %}
+  maxconn                 {{ defaults.maxconn }}
 
-## Frontend Machine Controller
-frontend machine_controller_frontend
-        bind *:22623
-        mode tcp
-  use_backend machine_controller
+### Listen
 
-## HTTP Traffic
-frontend http_frontend
-        bind *:80
-        mode tcp
-  use_backend http
+{% for l in listen %}
+listen {{ l.name }}
+  bind {{ l.bind }}
+  {% if l.stats.enable %}
+  stats enable
+  {% endif %}
+  stats uri {{ l.stats.uri }}
+  stats auth {{ l.stats.auth }}
+  stats refresh {{ l.stats.refresh }}
+{% endfor %}
 
-## HTTPS traffic
-frontend https_frontend
-        bind *:443
-        mode tcp
-  use_backend https
+### Frontends
+
+{% for f in frontend %}
+frontend {{ f.name }}
+  bind {{ f.bind }}
+  mode {{ f.mode }}
+  use_backend {{ f.use_backend }}
+
+{% endfor %}
 
 #### Backends
 
-backend api
-  balance leastconn
-  option tcp-check
-  server bootstrap 10.44.66.20:6443 check
-  server control01 10.44.66.21:6443 check
-  server control02 10.44.66.22:6443 check
-  server control03 10.44.66.23:6443 check
-
-backend machine_controller
-  balance leastconn
-  option tcp-check
-  server bootstrap 10.44.66.20:22623 check 
-  server control01 10.44.66.21:22623 check 
-  server control02 10.44.66.22:22623 check 
-  server control03 10.44.66.23:22623 check 
-
-backend http
-  balance leastconn
-  option tcp-check
-  server bootstrap 10.44.66.20:80 check 
-  server control01 10.44.66.21:80 check 
-  server control02 10.44.66.22:80 check 
-  server control03 10.44.66.23:80 check 
-
-backend https
-  balance leastconn
-  option tcp-check
-  server bootstrap 10.44.66.20:443 check
-  server control01 10.44.66.21:443 check
-  server control02 10.44.66.22:443 check
-  server control03 10.44.66.23:443 check
+{% for b in backend %}
+backend {{ b.name }}
+  balance {{ b.balance }}
+  {% for option in b.options %}
+  option {{ option }}
+  {% endfor %}
+  {% for s in b.server %}
+  server {{ s.hostname }} {{ s.ip }}:{{ s.port }} {{ s.check }}
+  {% endfor %}

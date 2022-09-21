@@ -21,11 +21,16 @@ defaults:
     - "redispatch"
   retries: 3
   timeout:
-    http-request: "10s"
-    queue: "1m"
-    connect: "10s"
-    client: "1m"
-    server: "1m"
+    - name: "http-request"
+      time: "10s"
+    - name: "queue"
+      time: "1m"
+    - name: "connect"
+      time: "10s"
+    - name: "client"
+      time: "1m"
+    - name: "server"
+      time: "1m"
     http-keep-alive: "10s"
     check: "10s"
   maxconn: 3000
@@ -39,7 +44,8 @@ listen:
       auth: "admin:admin"
       refresh: "30s"
     mode: "http"
-
+  
+frontend:
   - name: api_frontend
     bind: "*:6443"
     mode: "tcp"
@@ -69,19 +75,19 @@ backend:
       - hostname: "bootstrap"
         ip: "10.44.41.20"
         port: 6443
-        check: true
+        check: "check"
       - hostname: "controller01"
         ip: "10.44.41.21"
         port: 6443
-        check: true
+        check: "check"
       - hostname: "controller02"
         ip: "10.44.41.22"
         port: 6443
-        check: true
+        check: "check"
       - hostname: "controller03"
         ip: "10.44.41.23"
         port: 6443
-        check: true
+        check: "check"
   - name: machine_controller
     balance: "leastcon"
     options:
