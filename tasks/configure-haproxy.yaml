@@ -33,8 +33,7 @@
     proto: tcp
     setype: http_port_t
     state: present
-  loop:
-    - "{{ frontend }}"
+  loop: "{{ frontend }}"
 
 - name: Start haproxy
   service:
