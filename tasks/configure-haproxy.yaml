@@ -21,6 +21,12 @@
     state: yes
     persistent: yes
 
+- name: Set SELinux nis_enabled bool
+  seboolean:
+    name: nis_enabled
+    state: yes
+    persistent: yes
+
 - name: Start haproxy
   service:
     name: haproxy
